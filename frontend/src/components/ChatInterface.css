@@ -276,6 +276,8 @@
   font-style: normal;
 }
 .chat-composer-footer button {
+  position: relative;
+  z-index: 1;
   display: grid;
   width: 37px;
   height: 37px;
@@ -286,6 +288,8 @@
   background: var(--blue);
   color: white;
   cursor: pointer;
+  pointer-events: auto;
+  touch-action: manipulation;
   transition:
     background 0.15s ease,
     opacity 0.15s ease;

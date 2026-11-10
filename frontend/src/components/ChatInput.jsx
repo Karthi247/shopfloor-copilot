@@ -1,4 +1,4 @@
-import React, { useLayoutEffect } from 'react';
+import React, { useLayoutEffect, useRef } from 'react';
 import Icon from './Icon';
 
 export default function ChatInput({
@@ -10,6 +10,8 @@ export default function ChatInput({
   compact = false,
   editing = false,
 }) {
+  const lastPointerSendAt = useRef(0);
+
   useLayoutEffect(() => {
     const textarea = inputRef?.current;
     if (!textarea) return;
@@ -18,10 +20,22 @@ export default function ChatInput({
     textarea.style.height = `${Math.min(textarea.scrollHeight, maxHeight)}px`;
   }, [inputRef, question]);
 
+  function sendQuestion(event) {
+    if (event) {
+      const now = Date.now();
+      if (now - lastPointerSendAt.current < 500) return;
+      lastPointerSendAt.current = now;
+    }
+
+    const value = (inputRef?.current?.value || question).trim();
+    if (!value || busy) return;
+    onSubmit(value);
+  }
+
   function handleKeyDown(event) {
     if (event.key === 'Enter' && !event.shiftKey) {
       event.preventDefault();
-      onSubmit();
+      sendQuestion();
     }
   }
   return (
@@ -29,7 +43,7 @@ export default function ChatInput({
       className={`chat-composer ${compact ? 'compact' : ''}`}
       onSubmit={(event) => {
         event.preventDefault();
-        onSubmit();
+        sendQuestion();
       }}
     >
       <label className="sr-only" htmlFor="chat-question">
@@ -59,7 +73,13 @@ export default function ChatInput({
           Enter to send <i>·</i> Shift + Enter for a new line
         </span>
         <button
-          type="submit"
+          type="button"
+          onPointerUp={sendQuestion}
+          onTouchEnd={(event) => {
+            event.preventDefault();
+            sendQuestion(event);
+          }}
+          onClick={sendQuestion}
           disabled={!question.trim() || busy}
           aria-label={
             busy ? 'Searching documents' : editing ? 'Update and retry' : 'Send message'

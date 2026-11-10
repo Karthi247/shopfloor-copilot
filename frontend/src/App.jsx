@@ -21,6 +21,13 @@ import './components/ChatInterface.css';
 const HISTORY_KEY_PREFIX = 'shopfloor-ai-copilot.history.v1.';
 const MAX_CONVERSATIONS = 50;
 
+function createChatId() {
+  if (typeof globalThis.crypto?.randomUUID === 'function') {
+    return globalThis.crypto.randomUUID();
+  }
+  return `chat-${Date.now().toString(36)}-${Math.random().toString(36).slice(2)}`;
+}
+
 function loadHistory(userId) {
   try {
     const saved = JSON.parse(
@@ -204,7 +211,7 @@ function Workspace({ user, onUserUpdated, onSignOut }) {
     const text = value.trim();
     if (!text || busyChatId) return;
     const existingChat = chats.find((chat) => chat.id === chatId);
-    const id = existingChat?.id || crypto.randomUUID();
+    const id = existingChat?.id || createChatId();
     const now = new Date().toISOString();
     const title =
       existingChat?.title ||
