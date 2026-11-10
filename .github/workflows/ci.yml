@@ -60,6 +60,18 @@ jobs:
       - name: Check Python syntax
         run: python -c "import ast, pathlib; [ast.parse(p.read_text(encoding='utf-8'), filename=str(p)) for p in pathlib.Path('backend').rglob('*.py')]"
 
+      - name: Pre-download embedding model
+        env:
+          PYTHONPATH: backend
+        run: |
+          python - <<'PY'
+          from app.config import settings
+          from sentence_transformers import SentenceTransformer
+
+          SentenceTransformer(settings.embedding_model)
+          print(f"Embedding model cached: {settings.embedding_model}")
+          PY
+
       - name: Run backend tests
         env:
           PYTHONPATH: backend
