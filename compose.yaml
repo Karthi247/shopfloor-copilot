@@ -11,6 +11,8 @@ services:
       DOCUMENTS_PATH: data/Documents
       AUTH_DATABASE_PATH: backend/data/users.sqlite3
       HF_HOME: /home/app/.cache/huggingface
+    ports:
+      - "127.0.0.1:${BACKEND_PORT:-8000}:8000"
     volumes:
       - ./backend/data:/app/backend/data
       - huggingface-cache:/home/app/.cache/huggingface
@@ -25,7 +27,7 @@ services:
       backend:
         condition: service_healthy
     ports:
-      - '8080:80'
+      - "127.0.0.1:${FRONTEND_PORT:-8080}:80"
     restart: unless-stopped
 
 volumes:

@@ -126,6 +126,7 @@ SIMILARITY_THRESHOLD=0.95
 ADMIN_TOKEN=replace-with-a-long-random-value
 AUTH_DATABASE_PATH=backend/data/users.sqlite3
 AUTH_SECRET_KEY=replace-with-a-random-secret-of-at-least-32-characters
+CORS_ORIGINS=http://localhost:5173,http://127.0.0.1:5173
 ```
 
 `AUTH_SECRET_KEY` signs 12-hour login sessions; set it to a private random value of at least 32 characters before signup. User records are stored in the ignored `backend/data/users.sqlite3` file, and passwords are stored as salted scrypt hashes. Chat history is stored in the current browser and separated by account. Groq keys stay in backend environment configuration and are never sent to frontend JavaScript. For Ollama, set `LLM_PROVIDER=ollama`, configure the base URL and model, and start Ollama separately.
@@ -162,12 +163,18 @@ Open `http://localhost:5173`. FastAPI OpenAPI docs are at `http://127.0.0.1:8000
 
 ## Run with Docker
 
-Install Docker Desktop and make sure its Linux container engine is running. The Compose setup runs FastAPI and serves the built React app through Nginx, which forwards `/api` requests to the backend. The backend is only reachable inside the Compose network; open the app at `http://localhost:8080`.
+Install Docker Desktop and make sure its Linux container engine is running. The Compose setup runs FastAPI and serves the built React app through Nginx, which forwards `/api` requests to the backend. Open the app at `http://localhost:8080` and FastAPI docs at `http://localhost:8000/docs` (or the configured ports). Both ports bind to the local machine only. The backend receives secrets at runtime through Compose; no `.env` file is copied into either image.
 
 The backend reads secrets from `backend/.env`. If that file does not exist, copy the example and set a Groq key (or configure Ollama), a private `ADMIN_TOKEN`, and a random `AUTH_SECRET_KEY` of at least 32 characters. Do not overwrite an existing `backend/.env`:
 
 ```powershell
 if (-not (Test-Path backend/.env)) { Copy-Item backend/.env.example backend/.env }
+```
+
+Docker Compose also reads optional host port overrides from the root `.env`. Copy `.env.example` to `.env` to change the defaults (frontend `8080`, backend `8000`). The root file contains no application secrets. Keep Groq, admin and authentication secrets in `backend/.env`.
+
+```powershell
+if (-not (Test-Path .env)) { Copy-Item .env.example .env }
 ```
 
 Build and start the services from the repository root:
@@ -176,19 +183,49 @@ Build and start the services from the repository root:
 docker compose up --build -d
 ```
 
-The document PDFs are mounted read-only from `data/Documents`. The first run needs to index them into the persistent Chroma volume:
+The document PDFs are mounted read-only from `data/Documents`. Put additional PDFs there before indexing; the application does not currently provide a PDF upload screen. The first run needs to index them into the persistent Chroma store:
 
 ```powershell
 docker compose run --rm backend python backend/scripts/ingest_documents.py
 ```
 
-Then reload the app at `http://localhost:8080` and create or sign into an account. The SQLite user database and Chroma index stay in the ignored `backend/data` folder on the host, so existing local accounts and indexed documents are available in Docker too. Downloaded embedding model files persist in a Docker volume. To stop the services, run `docker compose down`; this keeps account and index data.
+Then reload the app at `http://localhost:8080` and create or sign into an account. The SQLite user database and Chroma index stay in the ignored `backend/data` folder on the host, so existing local accounts and indexed documents are available in Docker too. Downloaded embedding model files persist in a Docker volume. To stop the services, run `docker compose down`; this keeps account and index data. Avoid `docker compose down -v` unless you intend to delete the downloaded model cache volume as well. The host bind-mounted account and Chroma data remain on disk.
 
 For Ollama running on the host, set `OLLAMA_BASE_URL=http://host.docker.internal:11434` in `backend/.env` before starting Compose.
 
+### Docker troubleshooting
+
+- If Docker reports that it cannot connect to the daemon, start Docker Desktop and wait for its Linux engine to become ready.
+- If a host port is already in use, set a different `FRONTEND_PORT` or `BACKEND_PORT` in root `.env`, then recreate the services with `docker compose up --build -d`.
+- If signup fails, confirm `AUTH_SECRET_KEY` is at least 32 characters and check backend logs with `docker compose logs backend`.
+- If chat reports a missing API key, configure `GROQ_API_KEY` in `backend/.env` or switch to a configured Ollama provider.
+- The first embedding-model download needs network access. Later runs reuse the `huggingface-cache` volume.
+- If no documents appear, confirm PDFs are under `data/Documents` and run the ingestion command above; check errors with `docker compose logs backend`.
+
+## Continuous integration
+
+GitHub Actions runs on pushes and pull requests targeting `main`:
+
+- `ci.yml` builds the frontend, checks Python formatting and syntax, then runs the backend test suite.
+- `docker-build.yml` builds both Docker images with Buildx and GitHub Actions layer caching. It validates builds only and does not publish images.
+
+The workflows use no API keys or application secrets. Run these checks locally from the repository root:
+
+```powershell
+cd frontend
+npm ci
+npm run build
+cd ..
+python -m pip install -r backend/requirements-dev.txt
+$env:PYTHONPATH = (Resolve-Path backend).Path
+python -m isort backend --check-only
+python -m black backend --check
+python -m pytest backend\tests
+```
+
 ## Local network deployment
 
-For a private Wi-Fi pilot only, run Uvicorn with `--host 0.0.0.0`, keep Vite on its configured `0.0.0.0` host, find the laptop's private IPv4 address with `ipconfig`, add that origin to the FastAPI CORS allowlist, and permit Python/Node ports 8000/5173 in Windows Firewall for a Private profile. A second device visits `http://<laptop-ip>:5173`. This was not network-verified in this environment. Do not expose the development servers publicly.
+For a private Wi-Fi pilot only, run Uvicorn with `--host 0.0.0.0`, keep Vite on its configured `0.0.0.0` host, find the laptop's private IPv4 address with `ipconfig`, add `http://<laptop-ip>:5173` to `CORS_ORIGINS` in `backend/.env`, and permit Python/Node ports 8000/5173 in Windows Firewall for a Private profile. A second device visits `http://<laptop-ip>:5173`. This was not network-verified in this environment. Do not expose the development servers publicly.
 
 A production factory deployment needs authentication, role authorization, TLS, approved document management, audit controls, backups and security review.
 

@@ -23,6 +23,13 @@ class Settings:
     similarity_threshold = float(os.getenv("SIMILARITY_THRESHOLD", "0.95"))
     admin_token = os.getenv("ADMIN_TOKEN", "")
     auth_secret_key = os.getenv("AUTH_SECRET_KEY", "")
+    cors_origins = [
+        origin.strip()
+        for origin in os.getenv(
+            "CORS_ORIGINS", "http://localhost:5173,http://127.0.0.1:5173"
+        ).split(",")
+        if origin.strip()
+    ]
     auth_database_path = ROOT / os.getenv(
         "AUTH_DATABASE_PATH", "backend/data/users.sqlite3"
     )
