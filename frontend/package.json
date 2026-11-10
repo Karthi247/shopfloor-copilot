@@ -1,0 +1,21 @@
+{
+  "name": "shopfloor-ai-copilot",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 0.0.0.0",
+    "build": "vite build",
+    "format": "prettier --write --ignore-path ../.prettierignore \"src/**/*.{js,jsx,ts,tsx,css}\" index.html vite.config.js package.json package-lock.json ../compose.yaml ../.vscode/settings.json ../assessment/actual_evaluation_results.json ../.vscode/extensions.json ../.prettierrc.json",
+    "format:check": "prettier --check --ignore-path ../.prettierignore \"src/**/*.{js,jsx,ts,tsx,css}\" index.html vite.config.js package.json package-lock.json ../compose.yaml ../.vscode/settings.json ../assessment/actual_evaluation_results.json ../.vscode/extensions.json ../.prettierrc.json"
+  },
+  "dependencies": {
+    "@vitejs/plugin-react": "latest",
+    "react": "latest",
+    "react-dom": "latest",
+    "vite": "latest"
+  },
+  "devDependencies": {
+    "prettier": "^3.9.10"
+  }
+}

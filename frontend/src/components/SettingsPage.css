@@ -1,0 +1,162 @@
+.settings-page {
+  max-width: 900px;
+}
+.settings-panel {
+  overflow: hidden;
+  margin-top: 14px;
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  background: #fff;
+  box-shadow: 0 3px 12px #25365006;
+}
+.settings-panel-heading {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 15px 17px;
+  border-bottom: 1px solid #edf0f4;
+}
+.settings-panel-icon {
+  display: grid;
+  width: 32px;
+  height: 32px;
+  flex: none;
+  place-items: center;
+  border: 1px solid #e7ebf3;
+  border-radius: 7px;
+  background: #f6f8fc;
+  color: #7185ab;
+}
+.settings-panel-heading > span:last-child {
+  display: grid;
+  gap: 4px;
+}
+.settings-panel-heading strong {
+  color: #3b495f;
+  font-size: 11.5px;
+  font-weight: 660;
+}
+.settings-panel-heading small {
+  color: #8994a3;
+  font-size: 9.5px;
+  line-height: 1.5;
+}
+.settings-row {
+  display: flex;
+  min-height: 42px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
+  padding: 0 18px;
+  border-bottom: 1px solid #f0f2f5;
+  color: #667386;
+  font-size: 10.5px;
+}
+.settings-row:last-child {
+  border-bottom: 0;
+}
+.settings-row > strong {
+  color: #46556b;
+  font-size: 9.5px;
+  font-weight: 650;
+}
+.settings-row > strong.setting-good,
+.settings-row > strong.setting-offline {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.settings-row > strong.setting-good i,
+.settings-row > strong.setting-offline i {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--success);
+}
+.settings-row > strong.setting-offline {
+  color: var(--danger);
+}
+.settings-row > strong.setting-offline i {
+  background: var(--danger);
+}
+.history-setting {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
+  padding: 16px 18px;
+}
+.history-setting > div > strong {
+  color: #46556b;
+  font-size: 10.5px;
+  font-weight: 650;
+}
+.history-setting p {
+  margin: 5px 0 0;
+  color: #8994a3;
+  font-size: 9.5px;
+}
+.clear-history-button {
+  display: inline-flex;
+  min-height: 31px;
+  flex: none;
+  align-items: center;
+  gap: 6px;
+  padding: 0 9px;
+  border: 1px solid #e6eaf0;
+  border-radius: 6px;
+  background: #fff;
+  color: #758195;
+  font-size: 9.5px;
+  cursor: pointer;
+}
+.clear-history-button:hover:not(:disabled) {
+  border-color: #edc6c1;
+  background: #fff8f7;
+  color: #b3433d;
+}
+.clear-history-button:disabled {
+  cursor: default;
+  opacity: 0.5;
+}
+.confirm-dialog {
+  width: min(100%, 380px);
+}
+.confirm-dialog h3 {
+  margin-top: 0;
+  font-size: 17.5px;
+}
+.confirm-dialog p {
+  font-size: 11.5px;
+}
+.confirm-dialog > div {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 20px;
+}
+.confirm-dialog button {
+  min-height: 33px;
+  padding: 0 12px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: white;
+  color: #697689;
+  font-size: 9.5px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.confirm-dialog .confirm-delete {
+  border-color: #d04444;
+  background: #d04444;
+  color: white;
+}
+@media (max-width: 520px) {
+  .history-setting {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+  .clear-history-button {
+    align-self: flex-start;
+  }
+}

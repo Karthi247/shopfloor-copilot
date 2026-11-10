@@ -1,0 +1,205 @@
+.profile-page {
+  max-width: 900px;
+}
+.profile-summary {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  margin-bottom: 17px;
+  padding: 15px 17px;
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  background: #fff;
+}
+.profile-large-avatar {
+  display: grid;
+  width: 42px;
+  height: 42px;
+  flex: none;
+  place-items: center;
+  border-radius: 50%;
+  background: #e8eefb;
+  color: #36528a;
+  font-size: 15.5px;
+  font-weight: 700;
+}
+.profile-summary > span:nth-child(2) {
+  display: grid;
+  min-width: 0;
+  gap: 4px;
+}
+.profile-summary strong {
+  overflow: hidden;
+  color: #34435a;
+  font-size: 11.5px;
+  font-weight: 680;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.profile-summary small {
+  overflow: hidden;
+  color: #8792a1;
+  font-size: 9.5px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.member-since {
+  margin-left: auto;
+  color: #8994a3;
+  font-size: 9.5px;
+  white-space: nowrap;
+}
+.profile-panel {
+  overflow: hidden;
+  margin-top: 13px;
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  background: #fff;
+  box-shadow: 0 3px 12px #25365006;
+}
+.profile-panel-heading {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 16px;
+  border-bottom: 1px solid #edf0f4;
+}
+.profile-panel-icon {
+  display: grid;
+  width: 30px;
+  height: 30px;
+  flex: none;
+  place-items: center;
+  border: 1px solid #e6ebf4;
+  border-radius: 7px;
+  background: #f5f7fc;
+  color: #7185ab;
+}
+.profile-panel-heading > span:last-child {
+  display: grid;
+  gap: 4px;
+}
+.profile-panel-heading strong {
+  color: #3b495f;
+  font-size: 10.5px;
+  font-weight: 670;
+}
+.profile-panel-heading small {
+  color: #8994a3;
+  font-size: 8.5px;
+  line-height: 1.5;
+}
+.profile-form {
+  display: grid;
+  justify-items: start;
+  gap: 12px;
+  padding: 16px;
+}
+.profile-fields {
+  display: grid;
+  width: min(100%, 680px);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+.profile-fields label {
+  display: grid;
+  gap: 6px;
+  color: #58667a;
+  font-size: 9.5px;
+  font-weight: 620;
+}
+.profile-fields input {
+  width: 100%;
+  height: 36px;
+  padding: 0 9px;
+  border: 1px solid #dfe5ed;
+  border-radius: 6px;
+  background: #fff;
+  color: #2c3b51;
+  font-size: 10.5px;
+}
+.profile-fields input:focus {
+  border-color: #8fa8e1;
+  outline: 3px solid #4779e812;
+}
+.secondary-button,
+.signout-button {
+  display: inline-flex;
+  min-height: 34px;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 0 12px;
+  border: 1px solid #dfe5ed;
+  border-radius: 6px;
+  background: #fff;
+  color: #58677d;
+  font-size: 9.5px;
+  font-weight: 630;
+  cursor: pointer;
+}
+.secondary-button:hover:not(:disabled),
+.signout-button:hover {
+  border-color: #c5d1e0;
+  background: #f8fafd;
+}
+.secondary-button:disabled {
+  cursor: wait;
+  opacity: 0.65;
+}
+.secondary-button .spinner {
+  width: 13px;
+  height: 13px;
+}
+.profile-message {
+  margin: 0;
+  font-size: 9.5px;
+}
+.profile-message.success {
+  color: #168152;
+}
+.profile-message.error {
+  color: #b3433d;
+}
+.profile-signout {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
+  margin-top: 16px;
+  padding: 15px 16px;
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  background: #fff;
+}
+.profile-signout strong {
+  color: #46546a;
+  font-size: 10.5px;
+}
+.profile-signout p {
+  margin: 4px 0 0;
+  color: #8994a3;
+  font-size: 8.5px;
+}
+.signout-button {
+  color: #a74640;
+}
+.signout-button:hover {
+  border-color: #efcfcb;
+  background: #fff8f7;
+}
+@media (max-width: 600px) {
+  .member-since {
+    display: none;
+  }
+  .profile-fields {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+  .profile-form {
+    padding: 13px;
+  }
+  .profile-summary {
+    padding: 12px;
+  }
+}

@@ -1,0 +1,180 @@
+[
+  {
+    "question": "What is the recommended coolant concentration for the TX-200 CNC turning centre?",
+    "answer": "The recommended coolant concentration for the TX‑200 CNC turning centre is **6 % to 8 %**.  \n*Source: MNT‑MAN‑CNC‑02 Rev 02, page 1.*",
+    "answered": true,
+    "sources": [
+      {
+        "document_number": "MNT-MAN-CNC-02",
+        "title": "Preventive Maintenance Manual - TX-200 CNC Turning Centre",
+        "revision": 2,
+        "effective_date": "20-Jan-2026",
+        "filename": "MNT-MAN-CNC-02_TX-200_Preventive_Maintenance.pdf",
+        "page": 1,
+        "section_heading": "1. Purpose; 2. Safety First; 3. Normal Operating Parameters; 4. Preventive Maintenance Schedule; 5. Chuck Mounting Bolt Torque; 6. Common Alarms"
+      }
+    ],
+    "revision_note": null
+  },
+  {
+    "question": "The machine is showing alarm AL-104. What does it mean and what should the operator do?",
+    "answer": "**Alarm AL‑104**\n\n- **Meaning:** Way lube oil level low.  \n- **Operator action:** Top up with ISO VG 68 oil to the MAX mark, then press **RESET**. The machine can continue after reset.  \n\n*Source: MNT‑MAN‑CNC‑02 Rev 02, page 2*",
+    "answered": true,
+    "sources": [
+      {
+        "document_number": "MNT-MAN-CNC-02",
+        "title": "Preventive Maintenance Manual - TX-200 CNC Turning Centre",
+        "revision": 2,
+        "effective_date": "20-Jan-2026",
+        "filename": "MNT-MAN-CNC-02_TX-200_Preventive_Maintenance.pdf",
+        "page": 2,
+        "section_heading": "Section not identified"
+      }
+    ],
+    "revision_note": null
+  },
+  {
+    "question": "Who is allowed to remove a lockout lock from a machine?",
+    "answer": "**Who may remove a lockout lock?**\n\n1. **Authorized person** – Only the person who applied the lock may remove it.  \n   *“Each authorised person removes only their own lock. Nobody may remove another person's lock.”*  \n   (SAF‑SOP‑003 Rev 05, page 5)\n\n2. **If the lock owner is absent** –  \n   a. The Shift Supervisor must first try to contact the lock owner by phone.  \n   b. If the owner cannot be reached, **both** the Production Manager **and** the Safety Officer must authorise the removal.  \n   c. The machine must then be physically inspected to confirm it is safe to re‑energise.  \n   (SAF‑SOP‑003 Rev 05, page 6)",
+    "answered": true,
+    "sources": [
+      {
+        "document_number": "SAF-SOP-003",
+        "title": "Lockout / Tagout (LOTO) - Safety Procedure",
+        "revision": 5,
+        "effective_date": "12-Feb-2026",
+        "filename": "SAF-SOP-003_Lockout_Tagout_Procedure.pdf",
+        "page": 1,
+        "section_heading": "1. Purpose; 2. Scope; 3. Definitions; 4. Lockout Procedure; 5. Removing Locks"
+      }
+    ],
+    "revision_note": null
+  },
+  {
+    "question": "What is the outer diameter tolerance for the BH-220 bearing housing?",
+    "answer": "The outer diameter tolerance for the BH‑220 bearing housing is **± 0.050 mm**【QC‑SOP‑014 Rev 04, page 2】.",
+    "answered": true,
+    "sources": [
+      {
+        "document_number": "QC-SOP-014",
+        "title": "Incoming Material Inspection - Standard Operating Procedure",
+        "revision": 4,
+        "effective_date": "01-Jul-2026",
+        "filename": "QC-SOP-014_Rev04_Incoming_Material_Inspection.pdf",
+        "page": 2,
+        "section_heading": "6. Inspection Dimensions - BH-220 Bearing Housing (Machined, from; 7. Records; 8. Revision History"
+      }
+    ],
+    "revision_note": "Current procedure uses the latest effective indexed QC-SOP-014 revision. Older revisions remain searchable when named explicitly."
+  },
+  {
+    "question": "How often should spindle runout be checked, and who does it?",
+    "answer": "**Spindle runout check**\n\n1. **Frequency:** Monthly  \n2. **Performed by:** Maintenance  \n\n*Source: MNT‑MAN‑CNC‑02 Rev 02, Preventive Maintenance Schedule (page 4).*",
+    "answered": true,
+    "sources": [
+      {
+        "document_number": "MNT-MAN-CNC-02",
+        "title": "Preventive Maintenance Manual - TX-200 CNC Turning Centre",
+        "revision": 2,
+        "effective_date": "20-Jan-2026",
+        "filename": "MNT-MAN-CNC-02_TX-200_Preventive_Maintenance.pdf",
+        "page": 1,
+        "section_heading": "1. Purpose; 2. Safety First; 3. Normal Operating Parameters; 4. Preventive Maintenance Schedule; 5. Chuck Mounting Bolt Torque; 6. Common Alarms"
+      }
+    ],
+    "revision_note": null
+  },
+  {
+    "question": "For lot size 501 to 3,200, how many samples are inspected and what minor defects are allowed?",
+    "answer": "For a lot size of **501 to 3,200 pieces**:\n\n1. **Samples inspected:** 32  \n2. **Minor defect allowance:**  \n   - Accept the lot if **1 or fewer** minor defects are found.  \n   - Reject the lot if **2 or more** minor defects are found.  \n\n*Source: QC‑SOP‑014 Rev 04, page 1.*",
+    "answered": true,
+    "sources": [
+      {
+        "document_number": "QC-SOP-014",
+        "title": "Incoming Material Inspection - Standard Operating Procedure",
+        "revision": 4,
+        "effective_date": "01-Jul-2026",
+        "filename": "QC-SOP-014_Rev04_Incoming_Material_Inspection.pdf",
+        "page": 1,
+        "section_heading": "1. Purpose; 2. Scope; 3. Responsibilities; 4. Sampling Plan; 5. Procedure"
+      }
+    ],
+    "revision_note": "Current procedure uses the latest effective indexed QC-SOP-014 revision. Older revisions remain searchable when named explicitly."
+  },
+  {
+    "question": "What happens if the supplier MTC is missing?",
+    "answer": "If the supplier’s Material Test Certificate (MTC) is missing, the lot is placed on HOLD and **must not be inspected or accepted until the MTC is received**.  \n*Source: QC‑SOP‑014 Rev 04, page 2.*",
+    "answered": true,
+    "sources": [
+      {
+        "document_number": "QC-SOP-014",
+        "title": "Incoming Material Inspection - Standard Operating Procedure",
+        "revision": 4,
+        "effective_date": "01-Jul-2026",
+        "filename": "QC-SOP-014_Rev04_Incoming_Material_Inspection.pdf",
+        "page": 2,
+        "section_heading": "6. Inspection Dimensions - BH-220 Bearing Housing (Machined, from; 7. Records; 8. Revision History"
+      }
+    ],
+    "revision_note": "Current procedure uses the latest effective indexed QC-SOP-014 revision. Older revisions remain searchable when named explicitly."
+  },
+  {
+    "question": "Where are rejected incoming materials stored under the current procedure?",
+    "answer": "Rejected incoming materials are moved to **Quarantine Cage Q1 in Stores Bay 3**.  \nThe cage is locked, and the key is held by the Shift QC Supervisor. (QC‑SOP‑014 Rev 04, page 2)",
+    "answered": true,
+    "sources": [
+      {
+        "document_number": "QC-SOP-014",
+        "title": "Incoming Material Inspection - Standard Operating Procedure",
+        "revision": 4,
+        "effective_date": "01-Jul-2026",
+        "filename": "QC-SOP-014_Rev04_Incoming_Material_Inspection.pdf",
+        "page": 2,
+        "section_heading": "6. Inspection Dimensions - BH-220 Bearing Housing (Machined, from; 7. Records; 8. Revision History"
+      }
+    ],
+    "revision_note": "Current procedure uses the latest effective indexed QC-SOP-014 revision. Older revisions remain searchable when named explicitly."
+  },
+  {
+    "question": "How did incoming inspection sampling change from Rev 03 to Rev 04?",
+    "answer": "**Change in sampling from Rev 03 to Rev 04**\n\n| Rev 03 | Rev 04 |\n|--------|--------|\n| **Sampling rule** – Draw **5 samples at random from every lot**, regardless of lot size. | **Lot‑size based sampling plan** – The number of samples to inspect varies with lot size (see table in §4). Minor defects are allowed only up to the limits shown; any critical or major defect in any sample causes immediate rejection. |\n\n**Key points**\n\n1. Rev 03 required a fixed sample size of 5 for all lots.  \n2. Rev 04 replaces that rule with a table that specifies:  \n   * the number of samples to inspect for each lot‑size range,  \n   * the maximum allowable minor defects, and  \n   * the rejection criteria for critical and major defects.  \n\n**Sources**\n\n- Rev 03: “Draw 5 samples at random from every lot, irrespective of lot size.” (QC‑SOP‑014 Rev 03, page 1).  \n- Rev 04: “The number of samples depends on the lot size… (table in §4).” (QC‑SOP‑014 Rev 04, page 1).",
+    "answered": true,
+    "sources": [
+      {
+        "document_number": "QC-SOP-014",
+        "title": "Incoming Material Inspection - Standard Operating Procedure",
+        "revision": 4,
+        "effective_date": "01-Jul-2026",
+        "filename": "QC-SOP-014_Rev04_Incoming_Material_Inspection.pdf",
+        "page": 2,
+        "section_heading": "6. Inspection Dimensions - BH-220 Bearing Housing (Machined, from; 7. Records; 8. Revision History"
+      },
+      {
+        "document_number": "QC-SOP-014",
+        "title": "Incoming Material Inspection - Standard Operating Procedure",
+        "revision": 3,
+        "effective_date": "15-Mar-2023",
+        "filename": "QC-SOP-014_Rev03_Incoming_Material_Inspection.pdf",
+        "page": 1,
+        "section_heading": "1. Purpose; 2. Scope; 3. Responsibilities; 4. Procedure; 5. Records; 6. Revision History"
+      },
+      {
+        "document_number": "QC-SOP-014",
+        "title": "Incoming Material Inspection - Standard Operating Procedure",
+        "revision": 4,
+        "effective_date": "01-Jul-2026",
+        "filename": "QC-SOP-014_Rev04_Incoming_Material_Inspection.pdf",
+        "page": 1,
+        "section_heading": "1. Purpose; 2. Scope; 3. Responsibilities; 4. Sampling Plan; 5. Procedure"
+      }
+    ],
+    "revision_note": "Revision comparison requested: Rev 03 and Rev 04. Instructions are shown separately by revision."
+  },
+  {
+    "question": "What is the fire assembly point?",
+    "answer": "I could not find this information in the available documents. Please consult the relevant department or authorized supervisor.",
+    "answered": false,
+    "sources": [],
+    "revision_note": null
+  }
+]
