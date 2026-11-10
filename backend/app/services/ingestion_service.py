@@ -5,10 +5,10 @@ from pathlib import Path
 
 import chromadb
 import fitz
-from sentence_transformers import SentenceTransformer
 
 from app.config import settings
-from app.services.chunking import chunk_text
+from app.services.chunking import CHUNKING_VERSION, chunk_text
+from app.services.embedding_service import load_embedding_model
 
 
 def metadata_for(filename: str, page_text: str):
@@ -97,34 +97,35 @@ def ingest_documents(force: bool = False):
     collection = client.get_or_create_collection(
         "shopfloor_documents", metadata={"hnsw:space": "cosine"}
     )
-    model = SentenceTransformer(settings.embedding_model)
+    model = load_embedding_model()
     # Sample_Questions.pdf is the evaluation input, never an answer source.
     files = sorted(
         p
         for p in settings.documents_path.glob("*.pdf")
         if p.stem.lower() != "sample_questions"
     )
-    allowed_filenames = {path.name for path in files}
-    all_rows = collection.get(include=["metadatas"])
-    removed = [
-        ident
-        for ident, meta in zip(all_rows["ids"], all_rows["metadatas"])
-        if meta.get("filename") not in allowed_filenames
-    ]
-    if removed:
-        collection.delete(ids=removed)
     indexed = 0
     for path in files:
         digest = hashlib.sha256(path.read_bytes()).hexdigest()
         existing = collection.get(where={"filename": path.name}, include=["metadatas"])
+        current_version = [
+            meta
+            for meta in existing["metadatas"]
+            if meta.get("file_hash") == digest
+            and meta.get("chunking_version") == CHUNKING_VERSION
+        ]
+        obsolete_ids = [
+            ident
+            for ident, meta in zip(existing["ids"], existing["metadatas"])
+            if meta.get("file_hash") != digest
+            or meta.get("chunking_version") != CHUNKING_VERSION
+        ]
         if (
             existing["ids"]
             and not force
-            and all(m.get("file_hash") == digest for m in existing["metadatas"])
+            and len(current_version) == len(existing["ids"])
         ):
             continue
-        if existing["ids"]:
-            collection.delete(ids=existing["ids"])
         pdf = fitz.open(path)
         document_base = (
             metadata_for(path.name, pdf[0].get_text("text", sort=True))
@@ -142,17 +143,31 @@ def ingest_documents(force: bool = False):
                 "section_heading": page_metadata["section_heading"],
             }
             for ix, chunk in enumerate(chunk_text(body)):
-                meta = {**base, "page": page_no, "chunk": ix, "file_hash": digest}
+                meta = {
+                    **base,
+                    "page": page_no,
+                    "chunk": ix,
+                    "file_hash": digest,
+                    "chunking_version": CHUNKING_VERSION,
+                }
                 metadata_hash = hashlib.sha256(
                     json.dumps(meta, sort_keys=True).encode()
                 ).hexdigest()[:8]
-                ids.append(f"{digest[:12]}-{page_no}-{ix}-{metadata_hash}")
+                ids.append(
+                    f"{digest[:12]}-{CHUNKING_VERSION}-{page_no}-{ix}-{metadata_hash}"
+                )
                 docs.append(chunk)
                 metas.append(meta)
         if docs:
             vectors = model.encode(docs, normalize_embeddings=True).tolist()
-            collection.add(ids=ids, documents=docs, metadatas=metas, embeddings=vectors)
+            collection.upsert(
+                ids=ids, documents=docs, metadatas=metas, embeddings=vectors
+            )
+            if obsolete_ids:
+                collection.delete(ids=obsolete_ids)
             indexed += 1
+        elif obsolete_ids:
+            collection.delete(ids=obsolete_ids)
     return {
         "files_found": len(files),
         "files_indexed": indexed,

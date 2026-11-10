@@ -21,6 +21,12 @@ class Settings:
     documents_path = ROOT / os.getenv("DOCUMENTS_PATH", "data/Documents")
     top_k = int(os.getenv("TOP_K", "5"))
     similarity_threshold = float(os.getenv("SIMILARITY_THRESHOLD", "0.95"))
+    rag_debug = os.getenv("RAG_DEBUG", "false").strip().lower() in {
+        "1",
+        "true",
+        "yes",
+        "on",
+    }
     admin_token = os.getenv("ADMIN_TOKEN", "")
     auth_secret_key = os.getenv("AUTH_SECRET_KEY", "")
     cors_origins = [

@@ -24,7 +24,7 @@ Finding a specific instruction in long PDFs is slow during a shift. A grounded r
 
 ## Screenshots
 
-Add reviewed desktop and mobile screenshots here after running the application.
+![alt text](image.png)
 
 ## Technology
 
@@ -123,6 +123,7 @@ CHROMA_PATH=backend/data/chroma_db
 DOCUMENTS_PATH=data/Documents
 TOP_K=5
 SIMILARITY_THRESHOLD=0.95
+RAG_DEBUG=false
 ADMIN_TOKEN=replace-with-a-long-random-value
 AUTH_DATABASE_PATH=backend/data/users.sqlite3
 AUTH_SECRET_KEY=replace-with-a-random-secret-of-at-least-32-characters
@@ -130,6 +131,8 @@ CORS_ORIGINS=http://localhost:5173,http://127.0.0.1:5173
 ```
 
 `AUTH_SECRET_KEY` signs 12-hour login sessions; set it to a private random value of at least 32 characters before signup. User records are stored in the ignored `backend/data/users.sqlite3` file, and passwords are stored as salted scrypt hashes. Chat history is stored in the current browser and separated by account. Groq keys stay in backend environment configuration and are never sent to frontend JavaScript. For Ollama, set `LLM_PROVIDER=ollama`, configure the base URL and model, and start Ollama separately.
+
+Set `RAG_DEBUG=true` in `backend/.env` to log retrieval candidates, revision-filter decisions, evidence-gate decisions, and the context sent to the answer provider. Set it back to `false` after diagnosing an issue. Debug logs redact common API-key, password, secret, and bearer-token assignments.
 
 ## Index documents
 

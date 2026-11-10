@@ -1,11 +1,15 @@
+import logging
 import re
 
 from app.config import settings
-from app.services.answer_validation import has_lexical_support
+from app.services.answer_validation import select_supported_hits
 from app.services.llm.factory import get_provider
+from app.services.query_normalization import safe_log_text
+from app.services.rag_diagnostics import log_rag_event
 from app.services.retrieval_service import Retriever
 
 NO_ANSWER = "I could not find this information in the available documents. Please consult the relevant department or authorized supervisor."
+logger = logging.getLogger(__name__)
 
 
 def answer_question(question: str, history: list[dict[str, str]] | None = None):
@@ -26,15 +30,55 @@ def answer_question(question: str, history: list[dict[str, str]] | None = None):
     if has_follow_up_reference and previous_user_questions:
         retrieval_question = f"{previous_user_questions[-1]}\n{question}"
     retriever = Retriever()
-    hits = retriever.search(retrieval_question, revision_question=question)
-    # Similarity is a gate, not evidence by itself: require a lexical anchor as well.
-    hits = [
-        h
-        for h in hits
-        if h["distance"] <= settings.similarity_threshold
-        and has_lexical_support(retrieval_question, [h["text"]])
-    ]
+    candidates = retriever.search(
+        retrieval_question, k=settings.top_k, revision_question=question
+    )
+    hits = select_supported_hits(
+        retrieval_question,
+        candidates,
+        threshold=settings.similarity_threshold,
+        limit=settings.top_k,
+    )
+
+    if settings.rag_debug:
+        accepted_keys = {
+            (hit.get("filename"), hit.get("page"), hit.get("revision")) for hit in hits
+        }
+        decisions = []
+        for hit in candidates:
+            key = (hit.get("filename"), hit.get("page"), hit.get("revision"))
+            if key in accepted_keys:
+                reason = "accepted"
+            elif hit["distance"] > settings.similarity_threshold:
+                reason = "cosine_distance_above_threshold"
+            else:
+                reason = "insufficient_lexical_evidence"
+            decisions.append(
+                {
+                    "filename": hit.get("filename"),
+                    "revision": hit.get("revision"),
+                    "page": hit.get("page"),
+                    "distance": round(hit["distance"], 4),
+                    "decision": reason,
+                    "preview": safe_log_text(hit["text"], 180),
+                }
+            )
+        log_rag_event(
+            logger,
+            "answer_gate",
+            original_question=safe_log_text(question),
+            candidate_count=len(candidates),
+            accepted_count=len(hits),
+            cosine_distance_threshold=settings.similarity_threshold,
+            decisions=decisions[:50],
+        )
     if not hits:
+        if settings.rag_debug:
+            log_rag_event(
+                logger,
+                "final_refusal",
+                original_question=safe_log_text(question),
+            )
         return {
             "answer": NO_ANSWER,
             "sources": [],
@@ -49,8 +93,22 @@ def answer_question(question: str, history: list[dict[str, str]] | None = None):
         f"[{h['document_number']} Rev {h['revision'] or 'unknown'}, {h['filename']}, page {h['page']}]\n{h['text']}"
         for h in hits
     )
+    if settings.rag_debug:
+        log_rag_event(
+            logger,
+            "context_sent_to_provider",
+            context=safe_log_text(context, 1000000),
+            source_count=len(hits),
+        )
     text = get_provider().generate(question, context, history)
     if not text.strip() or NO_ANSWER.lower() in text.lower():
+        if settings.rag_debug:
+            log_rag_event(
+                logger,
+                "provider_no_answer",
+                original_question=safe_log_text(question),
+                sources=len(hits),
+            )
         return {
             "answer": NO_ANSWER,
             "sources": [],
@@ -106,6 +164,22 @@ def answer_question(question: str, history: list[dict[str, str]] | None = None):
         note = (
             (note + " " if note else "")
             + "Effective-date metadata is incomplete; verify which revision is approved for use."
+        )
+    if settings.rag_debug:
+        log_rag_event(
+            logger,
+            "final_answer",
+            original_question=safe_log_text(question),
+            source_count=len(sources),
+            sources=[
+                {
+                    "document_number": source["document_number"],
+                    "revision": source["revision"],
+                    "filename": source["filename"],
+                    "page": source["page"],
+                }
+                for source in sources
+            ],
         )
     return {
         "answer": text or NO_ANSWER,
