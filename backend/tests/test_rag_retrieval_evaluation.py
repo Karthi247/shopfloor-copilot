@@ -152,6 +152,50 @@ def test_explicit_historical_revision_is_not_mixed_with_current_revision(
 
 
 def test_answer_service_builds_complete_loto_context_without_calling_groq(monkeypatch):
+    question = (
+        "What should happen if an authorized employee leaves the workplace "
+        "without removing their LOTO lock?"
+    )
+    source_name = "SAF-SOP-003_Lockout_Tagout_Procedure.pdf"
+    excerpts = [
+        {
+            "text": (
+                "Authorized employees must follow LOTO lock removal. If the lock owner "
+                "is absent, the Shift Supervisor attempts to contact the owner. If "
+                "unreachable, the Production Manager and Safety Officer must both "
+                "authorize removing the lock."
+            ),
+            "distance": 0.3,
+            "document_number": "SAF-SOP-003",
+            "revision": 5,
+            "revision_known": True,
+            "filename": source_name,
+            "page": 1,
+            "title": "Lockout Tagout Procedure",
+            "effective_date": "12-Feb-2026",
+            "section_heading": "Lock Removal",
+        },
+        {
+            "text": (
+                "Removal is recorded on form SF-12 Lock Removal Record. The lock owner "
+                "must be informed before they resume work on their next shift."
+            ),
+            "distance": 0.35,
+            "document_number": "SAF-SOP-003",
+            "revision": 5,
+            "revision_known": True,
+            "filename": source_name,
+            "page": 2,
+            "title": "Lockout Tagout Procedure",
+            "effective_date": "12-Feb-2026",
+            "section_heading": "Lock Removal",
+        },
+    ]
+
+    class FakeRetriever:
+        def search(self, *_args, **_kwargs):
+            return excerpts
+
     class ContextCapture:
         context = ""
 
@@ -160,11 +204,9 @@ def test_answer_service_builds_complete_loto_context_without_calling_groq(monkey
             return "The procedure requires the recorded removal and lock-owner notice."
 
     provider = ContextCapture()
+    monkeypatch.setattr(answer_service, "Retriever", FakeRetriever)
     monkeypatch.setattr(answer_service, "get_provider", lambda: provider)
-    answer = answer_service.answer_question(
-        "What should happen if an authorized employee leaves the workplace "
-        "without removing their LOTO lock?"
-    )
+    answer = answer_service.answer_question(question)
     assert answer["answered"]
     assert "SF-12 Lock Removal Record" in provider.context
     assert "lock owner must be informed before they resume work" in provider.context
