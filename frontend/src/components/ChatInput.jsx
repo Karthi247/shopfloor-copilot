@@ -8,6 +8,7 @@ export default function ChatInput({
   busy,
   inputRef,
   compact = false,
+  editing = false,
 }) {
   useLayoutEffect(() => {
     const textarea = inputRef?.current;
@@ -38,8 +39,10 @@ export default function ChatInput({
         <span className="chat-composer-heading-icon">
           <Icon name="spark" size={15} />
         </span>
-        <strong>Ask ShopFloor Copilot</strong>
-        <span>Document-grounded answers</span>
+        <strong>{editing ? 'Editing your question' : 'Ask ShopFloor Copilot'}</strong>
+        <span>
+          {editing ? 'Update the question, then retry' : 'Document-grounded answers'}
+        </span>
       </div>
       <textarea
         id="chat-question"
@@ -58,7 +61,9 @@ export default function ChatInput({
         <button
           type="submit"
           disabled={!question.trim() || busy}
-          aria-label={busy ? 'Searching documents' : 'Send message'}
+          aria-label={
+            busy ? 'Searching documents' : editing ? 'Update and retry' : 'Send message'
+          }
         >
           {busy ? <span className="spinner" /> : <Icon name="send" size={17} />}
         </button>

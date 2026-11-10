@@ -96,6 +96,18 @@ const paths = {
       <path d="M3 3v5h5m4-1v5l3 2" />
     </>
   ),
+  edit: (
+    <>
+      <path d="M12 20h9" />
+      <path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L8 18l-4 1 1-4Z" />
+    </>
+  ),
+  retry: (
+    <>
+      <path d="M20 7v5h-5" />
+      <path d="M4 17a8 8 0 0 0 13.7 1.7L20 16M4 8l2.3-2.7A8 8 0 0 1 20 12" />
+    </>
+  ),
 };
 
 export default function Icon({ name, size = 18, strokeWidth = 1.7, className = '' }) {

@@ -111,6 +111,7 @@ function Workspace({ user, onUserUpdated, onSignOut }) {
   const [activeChatId, setActiveChatId] = useState(null);
   const [historySearch, setHistorySearch] = useState('');
   const [question, setQuestion] = useState('');
+  const [editTarget, setEditTarget] = useState(null);
   const [busyChatId, setBusyChatId] = useState(null);
   const [health, setHealth] = useState(null);
   const [documents, setDocuments] = useState([]);
@@ -153,6 +154,7 @@ function Workspace({ user, onUserUpdated, onSignOut }) {
     setPage('assistant');
     setActiveChatId(null);
     setQuestion('');
+    setEditTarget(null);
     setSidebarOpen(false);
     inputRef.current?.focus();
   }
@@ -161,6 +163,7 @@ function Workspace({ user, onUserUpdated, onSignOut }) {
     setPage('assistant');
     setActiveChatId(id);
     setQuestion('');
+    setEditTarget(null);
     setSidebarOpen(false);
   }
 
@@ -170,6 +173,7 @@ function Workspace({ user, onUserUpdated, onSignOut }) {
     if (activeChatId === id) {
       setActiveChatId(null);
       setQuestion('');
+      setEditTarget(null);
     }
   }
 
@@ -177,30 +181,45 @@ function Workspace({ user, onUserUpdated, onSignOut }) {
     setChats([]);
     setActiveChatId(null);
     setQuestion('');
+    setEditTarget(null);
   }
 
-  async function submit(value = question) {
-    const text = value.trim();
-    if (!text || busyChatId) return;
-    const existingChat = chats.find((chat) => chat.id === activeChatId);
-    const id = existingChat?.id || crypto.randomUUID();
-    const now = new Date().toISOString();
-    const title =
-      existingChat?.title ||
-      (text.length > 48 ? `${text.slice(0, 48).trimEnd()}…` : text);
-    const history = (existingChat?.messages || [])
+  function toApiHistory(messagesToConvert) {
+    return messagesToConvert
       .map((message) => {
-        if (message.role === 'user') return { role: 'user', content: message.content };
+        if (message.role === 'user')
+          return { role: 'user', content: message.content };
         return message.result?.answer
           ? { role: 'assistant', content: message.result.answer }
           : null;
       })
       .filter(Boolean)
       .slice(-6);
+  }
+
+  async function runQuestion(
+    value,
+    { chatId = activeChatId, replaceFromIndex = null } = {},
+  ) {
+    const text = value.trim();
+    if (!text || busyChatId) return;
+    const existingChat = chats.find((chat) => chat.id === chatId);
+    const id = existingChat?.id || crypto.randomUUID();
+    const now = new Date().toISOString();
+    const title =
+      existingChat?.title ||
+      (text.length > 48 ? `${text.slice(0, 48).trimEnd()}…` : text);
+    const previousMessages = existingChat?.messages || [];
+    const historyMessages =
+      replaceFromIndex === null
+        ? previousMessages
+        : previousMessages.slice(0, replaceFromIndex);
+    const history = toApiHistory(historyMessages);
 
     setPage('assistant');
     setActiveChatId(id);
     setQuestion('');
+    setEditTarget(null);
     setBusyChatId(id);
     setChats((previous) => {
       const exists = previous.some((chat) => chat.id === id);
@@ -210,7 +229,12 @@ function Workspace({ user, onUserUpdated, onSignOut }) {
               ? {
                   ...chat,
                   updatedAt: now,
-                  messages: [...chat.messages, { role: 'user', content: text }],
+                  messages: [
+                    ...(replaceFromIndex === null
+                      ? chat.messages
+                      : chat.messages.slice(0, replaceFromIndex)),
+                    { role: 'user', content: text },
+                  ],
                 }
               : chat,
           )
@@ -263,6 +287,37 @@ function Workspace({ user, onUserUpdated, onSignOut }) {
     } finally {
       setBusyChatId(null);
     }
+  }
+
+  async function submit(value = question) {
+    await runQuestion(value, {
+      chatId: editTarget?.chatId || activeChatId,
+      replaceFromIndex: editTarget?.index ?? null,
+    });
+  }
+
+  function retryQuestion(chatId, userIndex) {
+    const chat = chats.find((item) => item.id === chatId);
+    const message = chat?.messages[userIndex];
+    if (message?.role !== 'user') return;
+    runQuestion(message.content, { chatId, replaceFromIndex: userIndex });
+  }
+
+  function editQuestion(chatId, userIndex) {
+    const chat = chats.find((item) => item.id === chatId);
+    const message = chat?.messages[userIndex];
+    if (message?.role !== 'user' || busyChatId) return;
+    setPage('assistant');
+    setActiveChatId(chatId);
+    setEditTarget({ chatId, index: userIndex });
+    setQuestion(message.content);
+    window.setTimeout(() => inputRef.current?.focus(), 0);
+  }
+
+  function cancelEdit() {
+    setEditTarget(null);
+    setQuestion('');
+    inputRef.current?.focus();
   }
 
   const pageTitles = {
@@ -346,7 +401,13 @@ function Workspace({ user, onUserUpdated, onSignOut }) {
                 <div className="conversation-scroll">
                   <div className="conversation-column">
                     {messages.map((message, index) => (
-                      <ChatMessage key={`${activeChatId}-${index}`} message={message} />
+                      <ChatMessage
+                        key={`${activeChatId}-${index}`}
+                        message={message}
+                        busy={Boolean(busyChatId)}
+                        onEdit={() => editQuestion(activeChatId, index)}
+                        onRetry={() => retryQuestion(activeChatId, index - 1)}
+                      />
                     ))}
                     {busyChatId === activeChatId && (
                       <div className="assistant-loading">
@@ -358,6 +419,14 @@ function Workspace({ user, onUserUpdated, onSignOut }) {
                   </div>
                 </div>
                 <div className="chat-input-dock conversation-dock">
+                  {editTarget && (
+                    <div className="chat-editing-banner">
+                      <span>Editing your question</span>
+                      <button type="button" onClick={cancelEdit}>
+                        Cancel
+                      </button>
+                    </div>
+                  )}
                   <ChatInput
                     question={question}
                     setQuestion={setQuestion}
@@ -365,6 +434,8 @@ function Workspace({ user, onUserUpdated, onSignOut }) {
                     busy={Boolean(busyChatId)}
                     inputRef={inputRef}
                     compact
+                    editing={Boolean(editTarget)}
+                    onCancel={cancelEdit}
                   />
                 </div>
               </>

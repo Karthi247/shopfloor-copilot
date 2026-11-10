@@ -183,11 +183,13 @@ Build and start the services from the repository root:
 docker compose up --build -d
 ```
 
-The document PDFs are mounted read-only from `data/Documents`. Put additional PDFs there before indexing; the application does not currently provide a PDF upload screen. The first run needs to index them into the persistent Chroma store:
+The document PDFs are mounted read-only from `data/Documents`. To add another PDF, copy it into that folder on your computer; no image rebuild or container restart is needed. The application does not currently provide a PDF upload screen. Run the ingestion command below both on the first setup and after adding or replacing PDFs. It downloads and caches the embedding model on its first run, then indexes new or changed files into the persistent Chroma store:
 
 ```powershell
-docker compose run --rm backend python backend/scripts/ingest_documents.py
+docker compose run --rm -e PYTHONPATH=/app/backend backend python backend/scripts/ingest_documents.py
 ```
+
+The command skips unchanged PDFs, so it is safe to run again. Once it completes, refresh the app to ask questions about the new document.
 
 Then reload the app at `http://localhost:8080` and create or sign into an account. The SQLite user database and Chroma index stay in the ignored `backend/data` folder on the host, so existing local accounts and indexed documents are available in Docker too. Downloaded embedding model files persist in a Docker volume. To stop the services, run `docker compose down`; this keeps account and index data. Avoid `docker compose down -v` unless you intend to delete the downloaded model cache volume as well. The host bind-mounted account and Chroma data remain on disk.
 

@@ -3,7 +3,7 @@ import AnswerMarkdown from './AnswerMarkdown';
 import SourceCard from './SourceCard';
 import Icon from './Icon';
 
-export default function ChatMessage({ message }) {
+export default function ChatMessage({ message, busy, onEdit, onRetry }) {
   if (message.role === 'user')
     return (
       <article className="chat-message user-message">
@@ -11,6 +11,14 @@ export default function ChatMessage({ message }) {
         <div className="message-content">
           <div className="message-author">You</div>
           <p className="user-message-text">{message.content}</p>
+          <button
+            className="message-action-button edit-question-button"
+            type="button"
+            disabled={busy}
+            onClick={onEdit}
+          >
+            <Icon name="edit" size={14} /> Edit question
+          </button>
         </div>
       </article>
     );
@@ -24,6 +32,14 @@ export default function ChatMessage({ message }) {
           <div className="chat-error" role="alert">
             <strong>Couldn’t complete the request</strong>
             <span>{message.error}</span>
+            <button
+              className="message-action-button retry-answer-button"
+              type="button"
+              disabled={busy}
+              onClick={onRetry}
+            >
+              <Icon name="retry" size={14} /> Retry answer
+            </button>
           </div>
         </div>
       </article>
