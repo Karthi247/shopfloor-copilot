@@ -171,7 +171,7 @@ The backend reads secrets from `backend/.env`. If that file does not exist, copy
 if (-not (Test-Path backend/.env)) { Copy-Item backend/.env.example backend/.env }
 ```
 
-Docker Compose also reads optional host port overrides from the root `.env`. Copy `.env.example` to `.env` to change the defaults (frontend `8080`, backend `8000`). The root file contains no application secrets. Keep Groq, admin and authentication secrets in `backend/.env`.
+Docker Compose also reads host port overrides and the Docker Hub username from the root `.env`. Copy `.env.example` to `.env`, then replace `DOCKERHUB_USERNAME` with your Docker Hub username (frontend defaults to `8080`, backend to `8000`). The root file contains no application secrets. Keep Groq, admin and authentication secrets in `backend/.env`.
 
 ```powershell
 if (-not (Test-Path .env)) { Copy-Item .env.example .env }
@@ -207,9 +207,28 @@ For Ollama running on the host, set `OLLAMA_BASE_URL=http://host.docker.internal
 GitHub Actions runs on pushes and pull requests targeting `main`:
 
 - `ci.yml` builds the frontend, checks Python formatting and syntax, then runs the backend test suite.
-- `docker-build.yml` builds both Docker images with Buildx and GitHub Actions layer caching. It validates builds only and does not publish images.
+- `docker-build.yml` builds both Docker images with Buildx and GitHub Actions layer caching. Pull requests only validate the builds; pushes to `main` and tags matching `v*` publish to Docker Hub.
 
-The workflows use no API keys or application secrets. Run these checks locally from the repository root:
+### Publish and pull Docker Hub images
+
+Create Docker Hub repositories named `shopfloor-ai-copilot-backend` and `shopfloor-ai-copilot-frontend`. Create a Docker Hub access token with write access, then add these repository secrets in GitHub under **Settings → Secrets and variables → Actions**:
+
+- `DOCKERHUB_USERNAME`: your Docker Hub username.
+- `DOCKERHUB_TOKEN`: the Docker Hub access token (do not use your account password).
+
+After the secrets are configured, pushing to `main` publishes both images with `main`, `latest`, and commit SHA tags. Pushing a version tag such as `v1.0.0` publishes that version and commit SHA. The workflow does not publish images for pull requests. Docker Hub credentials are used only by the publishing workflow and are not included in the images.
+
+To pull and run the published images on a machine with Docker Desktop, set your Docker Hub username in the root `.env` and use the same backend environment setup described above:
+
+```powershell
+docker login -u YOUR_DOCKERHUB_USERNAME
+docker compose pull
+docker compose up -d
+```
+
+Set `IMAGE_TAG` in root `.env` to select a version tag instead of `latest`. To return to building from the local source, run `docker compose up --build -d`.
+
+The CI workflows use no application API keys. Run the source checks locally from the repository root:
 
 ```powershell
 cd frontend
