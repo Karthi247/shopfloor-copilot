@@ -38,7 +38,6 @@ This project record does not claim that formal interviews or factory-floor usabi
 
 I added a deterministic test for the LOTO answer-service path. It supplies mocked excerpts from both relevant procedure pages and a mocked language-model provider, then checks that the answer service assembles the complete evidence context and returns an answer. This was chosen because the test previously depended on a populated local Chroma index, which is not present in a clean CI environment. The test now checks answer-service behavior without requiring a local index or a live Groq call.
 
-Other design choices supporting the same goal include page-level citations, revision metadata and filtering, a conservative no-answer path, and a retry option for transient request failures. These help users verify and recover, while leaving decisions with the people responsible for the work.
 
 ## 5. Final reflection – biggest challenge and how you handled it
 
