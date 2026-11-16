@@ -44,5 +44,5 @@ Other design choices supporting the same goal include page-level citations, revi
 
 The biggest engineering challenge recorded in this project was making retrieval and answer behavior dependable across different document and runtime states. A live local index can make a test pass even when CI has no indexed documents. For the LOTO answer-service test, I removed that environmental dependency by providing explicit procedure excerpts and a fake provider. The targeted test passed, and the full backend suite passed locally with 30 tests passing.
 
-The remaining challenge is validating the source data and workflow with actual users. PDF extraction can lose table structure, revision metadata can be incomplete, and retrieval thresholds can reject valid questions or accept weak matches. These need representative document fixtures and review with supervisors and document owners. This prototype has not been shown to certify procedures or replace an approved source of truth.
+The remaining challenge is validating the source data and workflow with actual users. PDF extraction can lose table structure, revision metadata can be incomplete, and retrieval thresholds can reject valid questions or accept weak matches. 
 
